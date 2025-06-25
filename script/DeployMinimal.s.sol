@@ -13,9 +13,13 @@ contract DeployMinimal is Script {
         HelperConfig helperConfig = new HelperConfig();
         HelperConfig.NetworkConfig memory config = helperConfig.getConfig();
 
-        vm.startBroadcast();
-        MinimalAccount minimalAccount = new MinimalAccount(config.entryPoint);
-        minimalAccount.transferOwnership(msg.sender);
+        // Anvil first address private key
+        uint256 PRIVATE_KEY = 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80;
+        address deployer = vm.addr(PRIVATE_KEY);
+
+        vm.startBroadcast(PRIVATE_KEY);
+        MinimalAccount minimalAccount = new MinimalAccount(config.entryPoint, deployer);
+        // minimalAccount.transferOwnership(msg.sender);
         vm.stopBroadcast();
         return (helperConfig, minimalAccount);
     }

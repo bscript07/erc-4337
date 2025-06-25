@@ -23,19 +23,19 @@ contract MinimalAccount is IAccount, Ownable {
     }
 
     modifier requireFromEntryPointOrOwner() {
-        require(msg.sender == address(i_entryPoint) && msg.sender == owner(), NotFromEntryPointOrOwner());
+        require(msg.sender == address(i_entryPoint) || msg.sender == owner(), NotFromEntryPointOrOwner());
         _;
     }
 
-    constructor(address entryPoint) Ownable(msg.sender) {
+    constructor(address entryPoint, address initialOwner) Ownable(initialOwner) {
         i_entryPoint = IEntryPoint(entryPoint);
     }
 
     // Receive ETH
     receive() external payable {}
 
-    function execute(address dest, uint256 value, bytes calldata functionData) external requireFromEntryPoint {
-        (bool success, bytes memory result) = dest.call{value: value}(functionData);
+    function execute(address destination, uint256 value, bytes calldata functionData) external requireFromEntryPointOrOwner {
+        (bool success, bytes memory result) = destination.call{value: value}(functionData);
         require(success, CallFailed(result));
     }
 
@@ -45,7 +45,6 @@ contract MinimalAccount is IAccount, Ownable {
         returns (uint256 validationData)
     {
         validationData = _validateSignature(userOp, userOpHash);
-        // _validateNonce
         _payPrefund(missingAccountFunds);
     }
 
