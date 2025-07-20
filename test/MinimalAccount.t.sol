@@ -44,11 +44,7 @@ contract MinimalAccountTest is Test {
 
         address destination = address(usdc);
         uint256 value = 0;
-        bytes memory functionData = abi.encodeWithSelector(
-            ERC20Mock.mint.selector,
-            address(minimalAccount),
-            AMOUNT
-        );
+        bytes memory functionData = abi.encodeWithSelector(ERC20Mock.mint.selector, address(minimalAccount), AMOUNT);
 
         // Act
         vm.prank(minimalAccount.owner());
@@ -64,11 +60,7 @@ contract MinimalAccountTest is Test {
 
         address destination = address(usdc);
         uint256 value = 0;
-        bytes memory functionData = abi.encodeWithSelector(
-            ERC20Mock.mint.selector,
-            address(minimalAccount),
-            AMOUNT
-        );
+        bytes memory functionData = abi.encodeWithSelector(ERC20Mock.mint.selector, address(minimalAccount), AMOUNT);
 
         // Act
         vm.prank(user);
@@ -85,33 +77,17 @@ contract MinimalAccountTest is Test {
 
         address destination = address(usdc);
         uint256 value = 0;
-        bytes memory functionData = abi.encodeWithSelector(
-            ERC20Mock.mint.selector,
-            address(minimalAccount),
-            AMOUNT
-        );
+        bytes memory functionData = abi.encodeWithSelector(ERC20Mock.mint.selector, address(minimalAccount), AMOUNT);
 
-        bytes memory executeCallData = abi.encodeWithSelector(
-            MinimalAccount.execute.selector,
-            destination,
-            value,
-            functionData
+        bytes memory executeCallData =
+            abi.encodeWithSelector(MinimalAccount.execute.selector, destination, value, functionData);
+        PackedUserOperation memory packedUserOp = sendPackedUserOp.generatedSignedUserOperation(
+            executeCallData, helperConfig.getConfig(), address(minimalAccount)
         );
-        PackedUserOperation memory packedUserOp = sendPackedUserOp
-            .generatedSignedUserOperation(
-                executeCallData,
-                helperConfig.getConfig(),
-                address(minimalAccount)
-            );
-        bytes32 userOperationHash = IEntryPoint(
-            helperConfig.getConfig().entryPoint
-        ).getUserOpHash(packedUserOp);
+        bytes32 userOperationHash = IEntryPoint(helperConfig.getConfig().entryPoint).getUserOpHash(packedUserOp);
 
         // act
-        address actualSigner = ECDSA.recover(
-            userOperationHash.toEthSignedMessageHash(),
-            packedUserOp.signature
-        );
+        address actualSigner = ECDSA.recover(userOperationHash.toEthSignedMessageHash(), packedUserOp.signature);
 
         // assert
         assertEq(actualSigner, minimalAccount.owner());
@@ -123,64 +99,36 @@ contract MinimalAccountTest is Test {
 
         address destination = address(usdc);
         uint256 value = 0;
-        bytes memory functionData = abi.encodeWithSelector(
-            ERC20Mock.mint.selector,
-            address(minimalAccount),
-            AMOUNT
-        );
+        bytes memory functionData = abi.encodeWithSelector(ERC20Mock.mint.selector, address(minimalAccount), AMOUNT);
 
-        bytes memory executeCallData = abi.encodeWithSelector(
-            MinimalAccount.execute.selector,
-            destination,
-            value,
-            functionData
+        bytes memory executeCallData =
+            abi.encodeWithSelector(MinimalAccount.execute.selector, destination, value, functionData);
+        PackedUserOperation memory packedUserOp = sendPackedUserOp.generatedSignedUserOperation(
+            executeCallData, helperConfig.getConfig(), address(minimalAccount)
         );
-        PackedUserOperation memory packedUserOp = sendPackedUserOp
-            .generatedSignedUserOperation(
-                executeCallData,
-                helperConfig.getConfig(),
-                address(minimalAccount)
-            );
-        bytes32 userOperationHash = IEntryPoint(
-            helperConfig.getConfig().entryPoint
-        ).getUserOpHash(packedUserOp);
+        bytes32 userOperationHash = IEntryPoint(helperConfig.getConfig().entryPoint).getUserOpHash(packedUserOp);
         uint256 missingAccountFunds = 1e18; // 1 ether
 
         // act
         vm.prank(helperConfig.getConfig().entryPoint);
-        uint256 validationData = minimalAccount.validateUserOp(
-            packedUserOp,
-            userOperationHash,
-            missingAccountFunds
-        );
+        uint256 validationData = minimalAccount.validateUserOp(packedUserOp, userOperationHash, missingAccountFunds);
 
         assertEq(validationData, 0);
     }
 
     function testEntryPointCanExecuteCommands() public {
-                // arrange
+        // arrange
         assertEq(usdc.balanceOf(address(minimalAccount)), 0);
 
         address destination = address(usdc);
         uint256 value = 0;
-        bytes memory functionData = abi.encodeWithSelector(
-            ERC20Mock.mint.selector,
-            address(minimalAccount),
-            AMOUNT
-        );
+        bytes memory functionData = abi.encodeWithSelector(ERC20Mock.mint.selector, address(minimalAccount), AMOUNT);
 
-        bytes memory executeCallData = abi.encodeWithSelector(
-            MinimalAccount.execute.selector,
-            destination,
-            value,
-            functionData
+        bytes memory executeCallData =
+            abi.encodeWithSelector(MinimalAccount.execute.selector, destination, value, functionData);
+        PackedUserOperation memory packedUserOp = sendPackedUserOp.generatedSignedUserOperation(
+            executeCallData, helperConfig.getConfig(), address(minimalAccount)
         );
-        PackedUserOperation memory packedUserOp = sendPackedUserOp
-            .generatedSignedUserOperation(
-                executeCallData,
-                helperConfig.getConfig(),
-                address(minimalAccount)
-            );
         // bytes32 userOperationHash = IEntryPoint(
         //     helperConfig.getConfig().entryPoint
         // ).getUserOpHash(packedUserOp);

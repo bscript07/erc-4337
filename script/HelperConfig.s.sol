@@ -51,9 +51,9 @@ contract HelperConfig is Script {
 
         // deploy mocks
         console2.log("Deploying mocks...");
-        vm.startBroadcast(ANVIL_DEFAULT_ACCOUNT);
-        EntryPoint entryPoint = new EntryPoint();
-        vm.stopBroadcast();
+        vm.startBroadcast(ANVIL_DEFAULT_ACCOUNT); // Start broadcast the transaction on anvil local blockchain
+        EntryPoint entryPoint = new EntryPoint(); // New instance of entry point
+        vm.stopBroadcast(); // Stop broadcasting
 
         localNetworkConfig = NetworkConfig({entryPoint: address(entryPoint), account: ANVIL_DEFAULT_ACCOUNT});
 
